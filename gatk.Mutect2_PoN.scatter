@@ -1,0 +1,35 @@
+#!/bin/bash
+SDIR="$( cd "$( dirname "$0" )" && pwd )"
+GATK=$SDIR/bin/gatk-4.4.0.0/gatk
+
+export GENOME=/juno/depot/assemblies/H.sapiens/b37/b37.fasta
+export GATKDIR=/juno/work/bic/socci/Work/Users/ElenitK/Wur4/Proj_14887/pipeline/GATK
+export DBSNP=$GATKDIR/resources/dbsnp/All_20150605.vcf.gz
+export AF_GNOMAD=$GATKDIR/bundle/b37/gatk-best-practices/somatic-b37/af-only-gnomad.raw.sites.vcf
+
+IBAM=$1
+SAMPLE_ID=$(samtools view -H $IBAM  | fgrep @RG | head -1 | tr '\t' '\n' | fgrep SM: | sed 's/SM://')
+BED=$2
+ODIR=$3
+
+module unload java
+module load java/jdk-17.0.8 
+
+if [ "$HMM_THREADS" == "" ]; then
+   echo
+   echo "Setting HMM_THREADS=1"
+   echo
+   HMM_THREADS=1
+fi
+
+mkdir -p $ODIR
+
+$GATK Mutect2 \
+   --native-pair-hmm-threads $HMM_THREADS \
+   -R $GENOME \
+   -I $IBAM \
+   -L $BED \
+   -tumor $SAMPLE_ID \
+   --max-mnp-distance 0 \
+   --germline-resource $AF_GNOMAD \
+   -O $ODIR/$(basename ${IBAM/.bam/.vcf.gz})
