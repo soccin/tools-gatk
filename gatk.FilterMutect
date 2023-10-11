@@ -1,6 +1,6 @@
 #!/bin/bash
 SDIR="$( cd "$( dirname "$0" )" && pwd )"
-GATK=$SDIR/bin/gatk-4.4.0.0/gatk
+GATK=$SDIR/bin/gatk
 
 export GENOME=/juno/depot/assemblies/H.sapiens/b37/b37.fasta
 export GATKDIR=/juno/work/bic/socci/Work/Users/ElenitK/Wur4/Proj_14887/pipeline/GATK
