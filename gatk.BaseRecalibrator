@@ -9,9 +9,6 @@ if [ ! -e $GATK ]; then
   exit 1
 fi
 
-#export GENOME=/juno/depot/assemblies/H.sapiens/b37/b37.fasta
-#export DBSNP=/juno/work/bic/socci/Work/Users/ElenitK/Wur4/Proj_14887/pipeline/GATK/resources/dbsnp/All_20150605.vcf.gz
-
 if [ -e ./bundle.sh ]; then
    echo
    echo "sourcing local bundle"
@@ -25,7 +22,6 @@ else
   exit 1
 fi
 
-
 IBAM=$1
 
 module unload java
@@ -34,6 +30,5 @@ module load java/jdk-17.0.8
 $GATK BaseRecalibrator \
   -I $IBAM \
   -R $GENOME \
-  -L $SDIR/b37_main.bed \
   --known-sites $DBSNP \
   -O ${IBAM/.bam/_recal_data.table}
