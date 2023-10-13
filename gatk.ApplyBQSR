@@ -30,6 +30,5 @@ module load java/jdk-17.0.8
 $GATK ApplyBQSR \
   -I $IBAM \
   -R $GENOME \
-  -L $SDIR/b37_main.bed \
   --bqsr-recal-file ${IBAM/.bam/_recal_data.table} \
   -O ${IBAM/.bam/.bsqr.bam}
