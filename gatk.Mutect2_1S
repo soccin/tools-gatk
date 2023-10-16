@@ -40,7 +40,7 @@ mkdir -p $ODIR
 
 for bed in $GENOME_SCATTER/*.bed; do
    echo $(basename ${bed/.bed/})
-   bsub -o LSF.gMu2/ -J gMu2_$$ -n $HMM_THREADS -W 359 \
+   bsub -o LSF.gMu2/ -J gMu2_$$ -n $HMM_THREADS -W 24:00 \
       $SDIR/gatk.Mutect2_1S.scatter $IBAM $bed $ODIR/scatter/$(basename ${bed/.bed/})
 done
 
