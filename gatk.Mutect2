@@ -84,6 +84,6 @@ $GATK FilterMutectCalls \
    -R $GENOME \
    -V $ODIR/$VCFFILE \
    --tumor-segmentation $ODIR/${TUMOR_ID}___${NORMAL_ID}.tumor_segments.table \
-   --contamination-table $ODIR/${TUMOR_ID}___${NORMAL_ID}.contamination.tabl \
+   --contamination-table $ODIR/${TUMOR_ID}___${NORMAL_ID}.contamination.table \
    --ob-priors $ODIR/${TUMOR_ID}___${NORMAL_ID}.f1r2.tar.gz \
    -O $ODIR/${VCFFILE/.vcf.gz/.filtered.vcf.gz}
