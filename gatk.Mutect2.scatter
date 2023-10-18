@@ -2,10 +2,12 @@
 SDIR="$( cd "$( dirname "$0" )" && pwd )"
 GATK=$SDIR/bin/gatk
 
-export GENOME=/juno/depot/assemblies/H.sapiens/b37/b37.fasta
-export GATKDIR=/juno/work/bic/socci/Work/Users/ElenitK/Wur4/Proj_14887/pipeline/GATK
-export PON=$GATKDIR/bundle/b37/gatk-best-practices/somatic-b37/Mutect2-WGS-panel-b37.vcf
-export AF_GNOMAD=$GATKDIR/bundle/b37/gatk-best-practices/somatic-b37/af-only-gnomad.raw.sites.vcf
+if [ ! -e $GATK ]; then
+  echo
+  echo "ERROR: Need to install GATK"
+  echo
+  exit 1
+fi
 
 if [ -e ./bundle.sh ]; then
    echo
@@ -13,6 +15,11 @@ if [ -e ./bundle.sh ]; then
    echo
    source ./bundle.sh
    cat ./bundle.sh
+else
+  echo
+  echo "ERROR: Need to provide bundle.sh"
+  echo
+  exit 1
 fi
 
 TBAM=$1
@@ -35,11 +42,17 @@ fi
 
 mkdir -p $ODIR
 
+if [ "$AF_GNOMAD" -= "" ]; then
+   GERMLINE_RESOURCE="--germline-resource $AF_GNOMAD"
+else
+   GERMLINE_RESOURCE=""
+fi
+
 $GATK Mutect2 \
    --native-pair-hmm-threads $HMM_THREADS \
    -R $GENOME \
    -L $BED \
-   --germline-resource $AF_GNOMAD \
+   $GERMLINE_RESOURCE \
    --panel-of-normals $PON \
    --f1r2-tar-gz $ODIR/f1r2.tar.gz \
    -I $TBAM -I $NBAM \
