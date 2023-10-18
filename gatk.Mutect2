@@ -41,21 +41,23 @@ fi
 ODIR=variants/mutect2/${TUMOR_ID}___${NORMAL_ID}
 mkdir -p $ODIR
 
+LSFTAG=$(md5sum <(uuidgen ) | perl -pe 's/.(........).*/\1/')
+
 for bed in $GENOME_SCATTER/*.bed; do
    echo $(basename ${bed/.bed/})
-   bsub -o LSF.sMu2/ -J s.Mu2_$$ -n $HMM_THREADS -W 24:00 \
+   bsub -o LSF.sMu2/ -J s.Mu2_$LSFTAG -n $HMM_THREADS -W 24:00 \
       $SDIR/gatk.Mutect2.scatter $TBAM $NBAM $bed $ODIR/scatter/$(basename ${bed/.bed/})
 done
 
-bsub -o LSF.sMu2/ -J s.Mu2_$$ -W 359 -R "rusage[mem=40]" \
+bsub -o LSF.sMu2/ -J s.Mu2.p_$LSFTAG -W 359 -R "rusage[mem=40]" \
    $GATK GetPileupSummaries -I $TBAM -V $PILEUP_SNPS -L $PILEUP_SNPS \
    -O $ODIR/${TUMOR_ID}.pileups.table
 
-bsub -o LSF.sMu2/ -J s.Mu2_$$ -W 359 -R "rusage[mem=40]" \
+bsub -o LSF.sMu2/ -J s.Mu2.p_$LSFTAG -W 359 -R "rusage[mem=40]" \
    $GATK GetPileupSummaries -I $NBAM -V $PILEUP_SNPS -L $PILEUP_SNPS \
    -O $ODIR/${NORMAL_ID}.pileups.table
 
- ~/bin/CentOS7/bSync s.Mu2_$$
+~/bin/CentOS7/bSync s.Mu2_$LSFTAG
 
 STATSFILE=$(basename $(find $ODIR/scatter -name "*.stats*" | head -1))
 
@@ -69,10 +71,12 @@ $GATK MergeVcfs \
    -O $ODIR/$VCFFILE \
    $(find $ODIR/scatter -name "*.vcf.gz" | awk '{print "-I "$1}')
 
-bsub -o LSF.sMu2.LROM/ -J s.LROM_$$ -n 4 -R "rusage[mem=12]" -W 359 \
+bsub -o LSF.sMu2.LROM/ -J s.Mu2.lrom_$LSFTAG -n 4 -R "rusage[mem=12]" -W 359 \
    $GATK LearnReadOrientationModel \
       -O $ODIR/${TUMOR_ID}___${NORMAL_ID}.f1r2.tar.gz \
       $(find $ODIR/scatter -name 'f1r2.tar.gz' | awk '{print "-I",$1}')
+
+~/bin/CentOS7/bSync s.Mu2.lrom_$LSFTAG
 
 $GATK CalculateContamination \
    -I $ODIR/${TUMOR_ID}.pileups.table \
