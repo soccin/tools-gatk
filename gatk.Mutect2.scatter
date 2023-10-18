@@ -42,7 +42,7 @@ fi
 
 mkdir -p $ODIR
 
-if [ "$AF_GNOMAD" -= "" ]; then
+if [ "$AF_GNOMAD" != "" ]; then
    GERMLINE_RESOURCE="--germline-resource $AF_GNOMAD"
 else
    GERMLINE_RESOURCE=""
