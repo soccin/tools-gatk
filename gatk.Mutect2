@@ -49,11 +49,11 @@ for bed in $GENOME_SCATTER/*.bed; do
       $SDIR/gatk.Mutect2.scatter $TBAM $NBAM $bed $ODIR/scatter/$(basename ${bed/.bed/})
 done
 
-bsub -o LSF.sMu2/ -J s.Mu2.p_$LSFTAG -W 359 -R "rusage[mem=40]" \
+bsub -o LSF.sMu2/ -J s.Mu2_$LSFTAG -W 359 -R "rusage[mem=40]" \
    $GATK GetPileupSummaries -I $TBAM -V $PILEUP_SNPS -L $PILEUP_SNPS \
    -O $ODIR/${TUMOR_ID}.pileups.table
 
-bsub -o LSF.sMu2/ -J s.Mu2.p_$LSFTAG -W 359 -R "rusage[mem=40]" \
+bsub -o LSF.sMu2/ -J s.Mu2_$LSFTAG -W 359 -R "rusage[mem=40]" \
    $GATK GetPileupSummaries -I $NBAM -V $PILEUP_SNPS -L $PILEUP_SNPS \
    -O $ODIR/${NORMAL_ID}.pileups.table
 
